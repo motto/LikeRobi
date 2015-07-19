@@ -7,6 +7,14 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525">
     <Grid>
-        
+
+        <WebBrowser Name="web1" HorizontalAlignment="Left"   Margin="251,0,-91,0" MinHeight="400" MinWidth="600" VerticalAlignment="Top" Source="https://www.facebook.com" Grid.ColumnSpan="3"/>
+        <Button x:Name="kepcsere" Content="kepcsere" HorizontalAlignment="Left" Margin="0,0,0,430" VerticalAlignment="Bottom" Width="246" Click="kepcsere1" ToolTip="fgdgdfgdsfgsdf"/>
+        <Button x:Name="button" Content="linkcsere" HorizontalAlignment="Left" Click="linkcsere" Margin="0,23,0,0" VerticalAlignment="Top" Width="246"/>
+        <Button x:Name="button1" Click="divtext" Content="hozzaad" HorizontalAlignment="Left" VerticalAlignment="Top" Width="246" RenderTransformOrigin="0.703,0.514"/>
+        <WebBrowser Name="web2" HorizontalAlignment="Left" Height="425" Margin="0,95,0,-16" VerticalAlignment="Top" Width="246"/>
+        <Popup Name="Popup1" Placement="Center" IsEnabled="True" IsOpen="False" Margin="260,35,39,152">
+            <WebBrowser Name="popBrowser1"/>
+        </Popup>
     </Grid>
 </Window>
