@@ -17,44 +17,35 @@ using System.Windows.Forms;
 using mshtml;
 using System.Security.Permissions;
 using System.Runtime.InteropServices;
+//[PermissionSet(SecurityAction.Demand, Name="FullTrust")]
+//[System.Runtime.InteropServices.ComVisibleAttribute(true)]
 
-
-
-namespace LikeRobi
+namespace WpfApplication1
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    /// 
-
-  
-
-       // public partial class Singleton
-        public partial class MainWindow : Window
-          {
-            private static MainWindow instance;
-
-            private MainWindow()
-            {
+    public partial class MainWindow : Window
+    {
+        public MainWindow()
+        {
             InitializeComponent();
             web1.LoadCompleted += web1_LoadCompleted;   // web1.ObjectForScripting = new Scriptinghelper();
                                                         // Scriptinghelper helper =new Scriptinghelper();
             this.web1.ObjectForScripting = new Scriptinghelper();
-             }
-
-            public static MainWindow Instance
+        }
+      
+   
+        [ComVisible(true)]
+        public class Scriptinghelper
+        {
+            public void likerobi()
             {
-                get
-                {
-                    if (instance == null)
-                    {
-                        instance = new MainWindow();
-                    }
-                    return instance;
-                }
+               MessageBoxResult messageBoxResult3 = System.Windows.MessageBox.Show("22222", "Delete Confirmation", System.Windows.MessageBoxButton.YesNo);
+                //  if (messageBoxResult3 == MessageBoxResult.Yes) ;
             }
 
-
+        }
 
         public void divtext(object sender, RoutedEventArgs e)
         {
@@ -76,7 +67,7 @@ namespace LikeRobi
 
                         if (fff.className == "_5pcp _5vsi _52i6 _1tsu _4l4" || fff.className == "_5pcp _5vsi _52i6 _4l4")
                         {
-                            fff.innerHTML = "<div class=\"robi\" onclick=\"kattint('"+lll+"');\">like Robi<div>";
+                            fff.innerHTML = "<div class=\"robi\" onclick=\"kattint()\">like Robi<div>";
                         }
 
                         //MessageBoxResult messageBoxResult3 = System.Windows.MessageBox.Show("Are youbbbbb sure?", "Delete Confirmation", System.Windows.MessageBoxButton.YesNo);
@@ -87,7 +78,7 @@ namespace LikeRobi
             }
 
         }
-       
+
         public void web1_LoadCompleted(object sender, NavigationEventArgs e)
         {
 
@@ -95,42 +86,14 @@ namespace LikeRobi
             dynamic doc = web1.Document;
             dynamic script = doc.createElement("SCRIPT");
             script.type = "text/javascript";
-            script.text = "function kattint(kkk){window.external.likerobi(kkk);}";
+            script.text = "function kattint(){window.external.likerobi();}";
             //dynamic head = doc.getElemetsByTagname("HEAD")[0];
             doc.head.appendChild(script);
-
+    
         }
 
-    }
 
-    [ComVisible(true)]
-    public class Scriptinghelper
-    {
 
-        public void likerobi(string adat)
-        {
-           // Window mainWindow =this.mai
-           MainWindow fp = LikeRobi.MainWindow.Instance ;
-           // fp.Show();
-            //MessageBoxResult messageBoxResult3 = System.Windows.MessageBox.Show("Are youbbbbb sure?", "Delete Confirmation", System.Windows.MessageBoxButton.YesNo);
-            //  if (messageBoxResult3 == MessageBoxResult.Yes) ;
-            //Popup myPopupWithText = new Popup();
-            fp.Popup1.IsOpen = true;
-            // Convert the string into a byte array
-            ASCIIEncoding Encode = new ASCIIEncoding();
-            byte[] post = Encode.GetBytes("username=nyuszoka&password=123");
-
-            // The destination url
-            string url = "http://localhost";
-
-            // The same Header that its sent when you submit a form.
-            string PostHeaders = "Content-Type: application/x-www-form-urlencoded";
-
-           fp.popBrowser1.Navigate(url, null, post, PostHeaders);
-        }
 
     }
-
-
-
 }
