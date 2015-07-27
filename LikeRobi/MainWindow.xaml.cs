@@ -19,6 +19,13 @@ using System.Security.Permissions;
 using System.Runtime.InteropServices;
 
 
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Threading;
+
+
+
 
 namespace LikeRobi
 {
@@ -27,33 +34,42 @@ namespace LikeRobi
     /// </summary>
     /// 
 
-  
+    public partial class MainWindow : Window
+    {
 
-       // public partial class Singleton
-        public partial class MainWindow : Window
-          {
-            private static MainWindow instance;
-
-            private MainWindow()
-            {
+        public MainWindow()
+        {
             InitializeComponent();
-            web1.LoadCompleted += web1_LoadCompleted;   // web1.ObjectForScripting = new Scriptinghelper();
-                                                        // Scriptinghelper helper =new Scriptinghelper();
-            this.web1.ObjectForScripting = new Scriptinghelper();
-             }
+            web1.LoadCompleted += web1_LoadCompleted;  
+            
+             
+        }
+        public void web1_LoadCompleted(object sender, NavigationEventArgs e)
+        {
+        
+            mshtml.HTMLDocument doc;
+            doc = (mshtml.HTMLDocument)web1.Document;
+            mshtml.HTMLDocumentEvents2_Event iEvent;
+            iEvent = (mshtml.HTMLDocumentEvents2_Event)doc;
+            iEvent.onclick += new mshtml.HTMLDocumentEvents2_onclickEventHandler(ClickEventHandler);
+        }
 
-            public static MainWindow Instance
+        private bool ClickEventHandler(mshtml.IHTMLEventObj e)
+        {
+         
+            System.Drawing.Point point = System.Windows.Forms.Control.MousePosition;
+            var doc = (mshtml.HTMLDocument)web1.Document;
+            IHTMLElement elem =doc.elementFromPoint(point.X,point.Y);
+            if (elem.className=="robi")
             {
-                get
-                {
-                    if (instance == null)
-                    {
-                        instance = new MainWindow();
-                    }
-                    return instance;
-                }
-            }
+            MessageBoxResult messageBoxResult2 = System.Windows.MessageBox.Show(elem.getAttribute("hhh"), "Delete Confirmation", System.Windows.MessageBoxButton.YesNo);
+           
 
+            }     
+             MessageBoxResult messageBoxResult3 = System.Windows.MessageBox.Show(elem.innerHTML, "Delete Confirmation", System.Windows.MessageBoxButton.YesNo);
+           
+            return true;
+        }
 
 
         public void divtext(object sender, RoutedEventArgs e)
@@ -76,8 +92,15 @@ namespace LikeRobi
 
                         if (fff.className == "_5pcp _5vsi _52i6 _1tsu _4l4" || fff.className == "_5pcp _5vsi _52i6 _4l4")
                         {
-                            fff.innerHTML = "<div class=\"robi\" onclick=\"kattint('"+lll+"');\">like Robi<div>";
+                            //fff.innerHTML = "<div class=\"robi\" onclick=\"kattint('" + lll + "');\">like Robi<div>";
+                        //fff.innerHTML = "<div class=\"robi\" hhh=\"" + lll + "\" >like Robi</div>";
+
+                            IHTMLElement sourceDiv =document.createElement("div");
+                            sourceDiv.className = "robi";
+                            sourceDiv.innerHTML = "LikeRobi";
+                            //fff.innerHTML.add;
                         }
+
 
                         //MessageBoxResult messageBoxResult3 = System.Windows.MessageBox.Show("Are youbbbbb sure?", "Delete Confirmation", System.Windows.MessageBoxButton.YesNo);
                         //  if (messageBoxResult3 == MessageBoxResult.Yes) ;
@@ -87,49 +110,9 @@ namespace LikeRobi
             }
 
         }
+    }
        
-        public void web1_LoadCompleted(object sender, NavigationEventArgs e)
-        {
-
-            //  WebBrowser browser = sender as WebBrowser;
-            dynamic doc = web1.Document;
-            dynamic script = doc.createElement("SCRIPT");
-            script.type = "text/javascript";
-            script.text = "function kattint(kkk){window.external.likerobi(kkk);}";
-            //dynamic head = doc.getElemetsByTagname("HEAD")[0];
-            doc.head.appendChild(script);
-
-        }
-
-    }
-
-    [ComVisible(true)]
-    public class Scriptinghelper
-    {
-
-        public void likerobi(string adat)
-        {
-           // Window mainWindow =this.mai
-           MainWindow fp = LikeRobi.MainWindow.Instance ;
-           // fp.Show();
-            //MessageBoxResult messageBoxResult3 = System.Windows.MessageBox.Show("Are youbbbbb sure?", "Delete Confirmation", System.Windows.MessageBoxButton.YesNo);
-            //  if (messageBoxResult3 == MessageBoxResult.Yes) ;
-            //Popup myPopupWithText = new Popup();
-            fp.Popup1.IsOpen = true;
-            // Convert the string into a byte array
-            ASCIIEncoding Encode = new ASCIIEncoding();
-            byte[] post = Encode.GetBytes("username=nyuszoka&password=123");
-
-            // The destination url
-            string url = "http://localhost";
-
-            // The same Header that its sent when you submit a form.
-            string PostHeaders = "Content-Type: application/x-www-form-urlencoded";
-
-           fp.popBrowser1.Navigate(url, null, post, PostHeaders);
-        }
-
-    }
+   
 
 
 
