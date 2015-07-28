@@ -60,15 +60,37 @@ namespace LikeRobi
             System.Drawing.Point point = System.Windows.Forms.Control.MousePosition;
             var doc = (mshtml.HTMLDocument)web1.Document;
             IHTMLElement elem =doc.elementFromPoint(point.X,point.Y);
-            if (elem.className=="robi")
+            // IHTMLElement ch =doc.elementFromPoint(point.X,point.Y);
+            if (elem == null || elem.className == null)
             {
-            MessageBoxResult messageBoxResult2 = System.Windows.MessageBox.Show(elem.getAttribute("hhh"), "Delete Confirmation", System.Windows.MessageBoxButton.YesNo);
-           
+            }
+            else
+            { 
+                if (elem.className == "_5pcp _5vsi _52i6 _1tsu _4l4" || elem.className == "_5pcp _5vsi _52i6 _4l4")
+                {
+                    foreach (IHTMLElement d in elem.all)
+                    {
+                        if (d.className != null)
+                        {
+                            if (d.className.Equals("robi"))
+                            {
+                                MessageBoxResult messageBoxResult2 = System.Windows.MessageBox.Show(d.getAttribute("hhh"), "Delete Confirmation", System.Windows.MessageBoxButton.YesNo);
 
-            }     
-             MessageBoxResult messageBoxResult3 = System.Windows.MessageBox.Show(elem.innerHTML, "Delete Confirmation", System.Windows.MessageBoxButton.YesNo);
-           
+                               // web1.Navigate("https://facebook.com");
+                                return false;
+
+                            }
+                        }
+                    }
+                }
+            }
+        
             return true;
+          
+
+             //MessageBoxResult messageBoxResult3 = System.Windows.MessageBox.Show(elem.innerHTML, "Delete Confirmation", System.Windows.MessageBoxButton.YesNo);
+           
+            
         }
 
 
@@ -92,12 +114,13 @@ namespace LikeRobi
 
                         if (fff.className == "_5pcp _5vsi _52i6 _1tsu _4l4" || fff.className == "_5pcp _5vsi _52i6 _4l4")
                         {
+
                             //fff.innerHTML = "<div class=\"robi\" onclick=\"kattint('" + lll + "');\">like Robi<div>";
                         //fff.innerHTML = "<div class=\"robi\" hhh=\"" + lll + "\" >like Robi</div>";
-
-                            IHTMLElement sourceDiv =document.createElement("div");
+                    fff.innerHTML = "<img src=\"http://kk.infolapok.hu/2.png\" class=\"robi\" hhh=\"" + lll + "\" />";
+                       /*     IHTMLElement sourceDiv =document.createElement("div");
                             sourceDiv.className = "robi";
-                            sourceDiv.innerHTML = "LikeRobi";
+                            sourceDiv.innerHTML = "LikeRobi";*/
                             //fff.innerHTML.add;
                         }
 
