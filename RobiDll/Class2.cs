@@ -30,6 +30,37 @@ namespace RobiDll
 
     }
 
+    public string post_keres(string cim)
+    {
+        string keresett_post = null;
+        HTMLDocument document = (HTMLDocument)web1.Document;
+        foreach (IHTMLElement div in document.getElementsByTagName("div"))
+        {
+            //if (div.className == "_5pcp _5vsi _52i6 _1tsu _4l4" || div.className == "_5pcp _5vsi _52i6 _4l4"  )
+            if (div.className == "userContentWrapper _5pcr")
+            {
+                IHTMLElementCollection elem = div.all;
+                foreach (IHTMLElement fff in elem)
+                {
+
+                    if (fff.className == "_5pcq")
+                    {
+                        if (fff.getAttribute("href") == cim)
+                        {
+
+                            keresett_post = div.innerHTML;
+                        }
+                    }
+                }
+
+            }
+        }
+        return keresett_post;
+    }
+
+
+
+
 }
 
 [ComVisible(true)]
@@ -124,7 +155,10 @@ namespace WpfApplication1
 
             }
         }
-
+ public void butnExitPopup_Click(object sender, RoutedEventArgs e)
+        {
+       
+        }
 
 
 
