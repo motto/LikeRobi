@@ -14,7 +14,7 @@
         <Button x:Name="button1" Content="Szponzorált" HorizontalAlignment="Left" Margin="0,48,0,0" VerticalAlignment="Top" Width="295"/>
         <Button x:Name="button2" Content="Csere" HorizontalAlignment="Left" Margin="0,75,0,0" VerticalAlignment="Top" Width="295"/>
         <Button x:Name="button3" Content="Saját" HorizontalAlignment="Left" Margin="0,102,0,0" VerticalAlignment="Top" Width="295"/>
-        <WebBrowser HorizontalAlignment="Left" Source="http://localhost/index.php?task=like" Margin="0,129,0,0"  VerticalAlignment="Top" Width="295" Height="65" MinHeight="350"/>
+        <WebBrowser Name="oldalsav" HorizontalAlignment="Left" Source="http://localhost/index.php?task=like" Margin="0,129,0,0"  VerticalAlignment="Top" Width="295" Height="65" MinHeight="350"/>
         <Popup Name="Popup1" Placement="Center" IsEnabled="True" MinWidth="500" MinHeight="400" StaysOpen="False" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto">
             <WebBrowser Name="popBrowser1"/>
         </Popup> 

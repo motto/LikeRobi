@@ -73,6 +73,8 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="jegyzet\jegyzet.cs" />
+    <Compile Include="jegyzet\old_cod.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -104,6 +106,28 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="view\HTMLPage1.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="view\Stylesheet1.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\HtmlMO\HtmlMO.csproj">
+      <Project>{c11d2b6d-5473-4316-8b61-7cc15df6223c}</Project>
+      <Name>HtmlMO</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ImageMO\ImageMO.csproj">
+      <Project>{2893032b-e66e-4392-b6c4-622e57d38a08}</Project>
+      <Name>ImageMO</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PostMO\PostMO.csproj">
+      <Project>{64217581-b1b7-40dd-b25d-87ac0064b17c}</Project>
+      <Name>PostMO</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

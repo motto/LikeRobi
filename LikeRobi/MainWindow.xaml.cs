@@ -32,89 +32,34 @@ using System.Drawing.Imaging;
 
 namespace LikeRobi
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    /// 
-
-    public partial class MainWindow : Window
+   public partial class MainWindow : Window
     {
 
         public MainWindow()
         {
             InitializeComponent();
-            web1.LoadCompleted += web1_LoadCompleted;  
-            
-             
-        }
-        private static System.Drawing.Image  resizeImage(System.Drawing.Image imgToResize, System.Drawing.Size size)
-        {
-            int sourceWidth = imgToResize.Width;
-            int sourceHeight = imgToResize.Height;
-
-            float nPercent = 0;
-            float nPercentW = 0;
-            float nPercentH = 0;
-
-            nPercentW = ((float)size.Width / (float)sourceWidth);
-            nPercentH = ((float)size.Height / (float)sourceHeight);
-
-            if (nPercentH < nPercentW)
-                nPercent = nPercentH;
-            else
-                nPercent = nPercentW;
-
-            int destWidth = (int)(sourceWidth * nPercent);
-            int destHeight = (int)(sourceHeight * nPercent);
-
-            Bitmap b = new Bitmap(destWidth, destHeight);
-            Graphics g = Graphics.FromImage((System.Drawing.Image)b);
-            //g.InterpolationMode = System.Drawing.InterpolationMode.HighQualityBicubic;
-
-            g.DrawImage(imgToResize, 0, 0, destWidth, destHeight);
-            g.Dispose();
-
-            return (System.Drawing.Image)b;
-          
+            web1.LoadCompleted += web1_LoadCompleted;            
         }
 
-
-
-
+    /// <summary>
+    /// fő böngésző ablak betöltődésekor fut le
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
         public void web1_LoadCompleted(object sender, NavigationEventArgs e)
-        {
-        
+        {      
             mshtml.HTMLDocument doc;
             doc = (mshtml.HTMLDocument)web1.Document;
             mshtml.HTMLDocumentEvents2_Event iEvent;
             iEvent = (mshtml.HTMLDocumentEvents2_Event)doc;
             iEvent.onclick += new mshtml.HTMLDocumentEvents2_onclickEventHandler(ClickEventHandler);
         }
-        //post küldés-------------------------------------
-        public void postkuld()
-        {
-            WebRequest request = WebRequest.Create("http://infolapok.hu/like/index.php");
-            // Set the Method property of the request to POST.
-            request.Method = "POST";
 
-            // Create POST data and convert it to a byte array.
-            string postData = "hhh=This is a test that posts this string to a Web server.";
-            byte[] byteArray = Encoding.UTF8.GetBytes(postData);
-            // Set the ContentType property of the WebRequest.
-            request.ContentType = "application/x-www-form-urlencoded";
-            // Set the ContentLength property of the WebRequest.
-            request.ContentLength = byteArray.Length;
-
-            // Get the request stream.
-            Stream dataStream = request.GetRequestStream();
-            // Write the data to the request stream.
-            dataStream.Write(byteArray, 0, byteArray.Length);
-            // Close the Stream object.
-            dataStream.Close();
-            //PostData.Close();
-          
-        }
-// a popuban megnyitott post betöltődesekor fut le------------------------------
+        /// <summary>
+        /// a popupban megnyitott post betöltődesekor fut le
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         public void poup_LoadCompleted(object sender, NavigationEventArgs e)
         {
             string currentURl = e.Uri.ToString();
@@ -124,124 +69,12 @@ namespace LikeRobi
             //postkuld();
             if (currentURl != "http://infolapok.hu/like/index.php")
             {
-                var topLeftCorner = popBrowser1.PointToScreen(new System.Windows.Point(0, 0));
-                var topLeftGdiPoint = new System.Drawing.Point((int)topLeftCorner.X, (int)topLeftCorner.Y);
-                var size = new System.Drawing.Size((int)popBrowser1.ActualWidth, (int)popBrowser1.ActualHeight);
-                var size2 = new System.Drawing.Size(250, 150);
-                Bitmap screenShot = new Bitmap(250, 150);
-                // Bitmap b = new Bitmap(size.Width, size.Height);
+             
+            } else {
 
-                using (var graphics = Graphics.FromImage(screenShot))
-                {
-                    graphics.CopyFromScreen(topLeftGdiPoint, new System.Drawing.Point(),
-                         size2, CopyPixelOperation.SourceCopy);
+            }
 
-
-                }
-                string data = "hhh=jjjjj&gg=sjgoasg"; //replace <
-                byte[]  byteArray= Encoding.UTF8.GetBytes(data);
-                string PostHeaders = "Content-Type: application/x-www-form-urlencoded";
-                popBrowser1.Navigate("http://infolapok.hu/like/index.php", null, byteArray,PostHeaders);
-
-            }  else { postkuld(); }
-           
-        
-        //adatküldés--------------------------------------------------
-        // screenShot.Save(@"D:\Temp\sc11555.png");
-
-        //string content = new StreamReader(@"D:\Temp\sc1152.png", Encoding.Unicode).ReadToEnd();
-        //  byte[] imageArray = System.IO.File.ReadAllBytes(@"D:\Temp\sc1152.png");
-        // MemoryStream m = new MemoryStream();
-        // screenShot.Save(m, screenShot.RawFormat);
-        //byte[] imageBytes = m.ToArray();
-        /*
-                    var stream = new MemoryStream();
-                    screenShot.Save(stream, screenShot.bm);
-                    var ggg = stream.ToArray();
-
-                    MemoryStream memoryStream = new MemoryStream();
-                    byte[] bitmapData;
-
-                    using (memoryStream)
-                    {
-                        screenShot.Save(memoryStream, ImageFormat.Bmp);
-                        bitmapData = memoryStream.ToArray();
-                    } 
-                    string content = Convert.ToBase64String(bitmapData);
-        */
-
-        /*     
-                 //StreamReader sourceStream = new StreamReader(@"D:\Temp\sc1152.png");
-                 //string postData = "key=" + sourceStream.ReadToEnd();
-                 string data = "username=jjjjj&hhh=fghsdfhs"; //replace <value>
-                 //byte[]  byteArray= Encoding.UTF8.GetBytes(data);
-                 var   byteArray= Encoding.ASCII.GetBytes(data);
-                 //byte[] byteArray = Encoding.UTF8.GetBytes(postData);
-                 request.ContentType = "application/x-www-form-urlencoded";
-                 // Set the ContentLength property of the WebRequest.
-                 request.ContentLength = byteArray.Length;
-                 // Get the request stream.
-                 Stream dataStream = request.GetRequestStream();
-                 // Write the data to the request stream.
-                 dataStream.Write(byteArray, 0, byteArray.Length);
-                 // Close the Stream object.
-                 //dataStream.Close();
-
-       //válasz a webszervertől
-                 // Get the response.
-                 WebResponse response = request.GetResponse();
-                 // Display the status.
-                // Console.WriteLine(((HttpWebResponse)response).StatusDescription);
-                 // Get the stream containing content returned by the server.
-                 dataStream = response.GetResponseStream();
-                 // Open the stream using a StreamReader for easy access.
-                 StreamReader reader = new StreamReader(dataStream);
-                 // Read the content.
-                 string responseFromServer = reader.ReadToEnd();
-                 // Display the content.
-                 //Console.WriteLine(responseFromServer);
-                 // Clean up the streams.
-                 reader.Close();
-                 dataStream.Close();
-                 response.Close();
-                 Popup1.IsOpen = false; // ablak bezárása
-                 Popup2.IsOpen = true;
-                 popBrowser2.NavigateToString(responseFromServer);
-                 // Copy the contents of the file to the request stream.
-
-
-
-                 // Console.WriteLine(result.Result.ToString());
-
-
-                 //screenShot.Save(@"D:\Temp\sc1152.png");
-
-                 /*
-       MemoryStream stream = new MemoryStream();
-                 screenShot.Save(stream,ImageFormat.Png);
-                 byte[]  poststream= stream.ToArray();
-                 ASCIIEncoding Encode = new ASCIIEncoding();
-                string base64String= Encode.GetString(poststream);
-                  //string base64String = Convert.ToBase64String(poststream);
-                 string postadat = "adat="+base64String;
-                 //string postData = String.Format(postadat);
-                 byte[] Post = Encoding.UTF8.GetBytes(postadat);
-
-                // byte[] post = Encode.GetBytes(postadat);
-                 string cim ="http://kk.infolapok.hu";
-                 Popup1.IsOpen = false;
-                 Popup2.IsOpen = true; //popBrowser1.Navigate(new Uri(kkk), null, null, null);
-
-
-                 string PostHeaders = "Content-Type: application/x-www-form-urlencoded";
-                 popBrowser2.Navigate(cim, null, Post, PostHeaders);
-
-        */
-
-
-
-
-    }
+        }
 
 
         // likerobi ikonra kattintva megnyit egy popupot a posttal------------------------

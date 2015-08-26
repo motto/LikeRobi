@@ -1,62 +1,44 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms
-
-
-
-namespace RobiDll
+﻿
+public void web1_LoadCompleted(object sender, NavigationEventArgs e)
 {
-    public MainWindow()
+
+    //  WebBrowser browser = sender as WebBrowser;
+    dynamic doc = web1.Document;
+    dynamic script = doc.createElement("SCRIPT");
+    script.type = "text/javascript";
+    script.text = "function kattint(kkk){window.external.likerobi(kkk);}";
+    //dynamic head = doc.getElemetsByTagname("HEAD")[0];
+    doc.head.appendChild(script);
+
+}
+
+public string post_keres(string cim)
+{
+    string keresett_post = null;
+    HTMLDocument document = (HTMLDocument)web1.Document;
+    foreach (IHTMLElement div in document.getElementsByTagName("div"))
     {
-        InitializeComponent();
-        web1.LoadCompleted += web1_LoadCompleted;   
-        this.web1.ObjectForScripting = new Scriptinghelper();//javascript figyelő
-    }
-
-
-    public void web1_LoadCompleted(object sender, NavigationEventArgs e)
-    {
-
-        //  WebBrowser browser = sender as WebBrowser;
-        dynamic doc = web1.Document;
-        dynamic script = doc.createElement("SCRIPT");
-        script.type = "text/javascript";
-        script.text = "function kattint(kkk){window.external.likerobi(kkk);}";
-        //dynamic head = doc.getElemetsByTagname("HEAD")[0];
-        doc.head.appendChild(script);
-
-    }
-
-    public string post_keres(string cim)
-    {
-        string keresett_post = null;
-        HTMLDocument document = (HTMLDocument)web1.Document;
-        foreach (IHTMLElement div in document.getElementsByTagName("div"))
+        //if (div.className == "_5pcp _5vsi _52i6 _1tsu _4l4" || div.className == "_5pcp _5vsi _52i6 _4l4"  )
+        if (div.className == "userContentWrapper _5pcr")
         {
-            //if (div.className == "_5pcp _5vsi _52i6 _1tsu _4l4" || div.className == "_5pcp _5vsi _52i6 _4l4"  )
-            if (div.className == "userContentWrapper _5pcr")
+            IHTMLElementCollection elem = div.all;
+            foreach (IHTMLElement fff in elem)
             {
-                IHTMLElementCollection elem = div.all;
-                foreach (IHTMLElement fff in elem)
+
+                if (fff.className == "_5pcq")
                 {
-
-                    if (fff.className == "_5pcq")
+                    if (fff.getAttribute("href") == cim)
                     {
-                        if (fff.getAttribute("href") == cim)
-                        {
 
-                            keresett_post = div.innerHTML;
-                        }
+                        keresett_post = div.innerHTML;
                     }
                 }
-
             }
+
         }
-        return keresett_post;
     }
+    return keresett_post;
+}
 
 
 
@@ -96,24 +78,24 @@ public class Scriptinghelper
 
 
 public class webmatat
-    {
-    }
-    public class idozito 
-    {
-        System.Windows.Forms.Timer t = new System.Windows.Forms.Timer();
+{
+}
+public class idozito
+{
+    System.Windows.Forms.Timer t = new System.Windows.Forms.Timer();
 
 
-        t.Interval = 3000; // 3s
+    t.Interval = 3000; // 3s
             t.Tick += new EventHandler(timer_Tick);
-        //   t.Start();
+    //   t.Start();
 
-    }
+}
 
-    void timer_Tick(object sender, EventArgs e)
-    {
-        //Call method
-        linkcsere2();
-    }
+void timer_Tick(object sender, EventArgs e)
+{
+    //Call method
+    linkcsere2();
+}
 }
 
 }
@@ -133,7 +115,7 @@ namespace WpfApplication1
 
             //web1.AddHandler.OnContentChanged
             // csere();
-     
+
         public void linkcsere2()
         {
             HTMLDocument document = (HTMLDocument)web1.Document;
@@ -155,9 +137,9 @@ namespace WpfApplication1
 
             }
         }
- public void butnExitPopup_Click(object sender, RoutedEventArgs e)
+        public void butnExitPopup_Click(object sender, RoutedEventArgs e)
         {
-       
+
         }
 
 
@@ -276,4 +258,3 @@ namespace WpfApplication1
             }
         }
     }
-}
