@@ -19,6 +19,10 @@ using mshtml;
 using System.Security.Permissions;
 using System.Runtime.InteropServices;
 
+using HtmlMO;
+using System.Web;
+using System.Web.UI.HtmlControls;
+using ImageMO;
 
 using System.ComponentModel;
 using System.Data;
@@ -28,31 +32,67 @@ using System.Net; // ftphez
 using System.Net.Http;
 using System.IO;
 using System.Drawing.Imaging;
-
-
+using NReco;
+//using NReco.ImageGenerator;
 namespace LikeRobi
 {
-   public partial class MainWindow : Window
+    public partial class MainWindow : Window
     {
+        HTMLDocument document;
+        HTMLDocument pop_document;
+        IHTMLElement feed_div;
+        string feed_id;
+        bool web1_betoltve = false; //fő böngésző első betöltődése
+        bool screen_image = false; //ha képernyőképet kell készíteni;
+        bool div_text = false;//ha manipulálni kell a html-t_s0 _5xib _5sq7 _rw img
+                              // feed adatok kígyűjtéséhez-----------------------------------
+        List<string> user_ikon_class = new List<string>(new string[] { "_s0 _5xib _5sq7 _rw img" });
+        List<string> feed_image_class = new List<string>(new string[] { "scaledImageFitWidth img", "scaledImageFitHeight img" }); 
+        List<string> feed_image_szoveg_class = new List<string>(new string[] { "_6m3" });
+         List<string> cimsor_class = new List<string>(new string[] { "fwn fcg" });
+        List<string> szoveg_class = new List<string>(new string[] { "text_exposed_root" });
+        //feed adatok
+        string cimadatok=" ";
+        string szoveg=" ";
+        string user_ikon_sourci=" ";
+        string feed_image_sourci=" ";
+        string feed_image_szoveg = " ";
+        //likerobi sávhoz kell----------------------------------------    
+        List<string> feed_div_class = new List<string>(new string[] { "_5jmm _5pat _3lb4", "_5jmm _5pat _3lb4 _x72 _50nb" });
+        List<string> cel_div_class = new List<string>(new string[] { "_5pcp _5vsi _52i6 _4l4", "_5pcp _5vsi _52i6 _1tsu _4l4" });
+        //string feed_view_html = @"view/HTMLPage1.html";
 
         public MainWindow()
         {
             InitializeComponent();
-            web1.LoadCompleted += web1_LoadCompleted;            
+            web1.LoadCompleted += web1_LoadCompleted; //fő ablak
+            popBrowser1.LoadCompleted += popup_LoadCompleted;//popup1 böngésző
         }
 
-    /// <summary>
-    /// fő böngésző ablak betöltődésekor fut le
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
+        /// <summary>
+        /// fő böngésző ablak betöltődésekor fut le
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         public void web1_LoadCompleted(object sender, NavigationEventArgs e)
-        {      
+        {
+            document = (mshtml.HTMLDocument)web1.Document;
+            web1_betoltve = true;
+            /*     
+            //HTMLPopup 
             mshtml.HTMLDocument doc;
-            doc = (mshtml.HTMLDocument)web1.Document;
+            
             mshtml.HTMLDocumentEvents2_Event iEvent;
             iEvent = (mshtml.HTMLDocumentEvents2_Event)doc;
             iEvent.onclick += new mshtml.HTMLDocumentEvents2_onclickEventHandler(ClickEventHandler);
+        
+            */
+        }
+
+        public void proba()
+        {
+        
+
         }
 
         /// <summary>
@@ -60,148 +100,246 @@ namespace LikeRobi
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void poup_LoadCompleted(object sender, NavigationEventArgs e)
-        {
-            string currentURl = e.Uri.ToString();
-            ///MessageBoxResult messageBoxResult2 = System.Windows.MessageBox.Show(currentURl, "Delete Confirmation", System.Windows.MessageBoxButton.YesNo);
-            // Get the object used to communicate with the server.
+        public void popup_LoadCompleted(object sender, NavigationEventArgs e)
+        { //string currentURl = "file";
+           //currentURl = e.Uri.ToString();
+          pop_document = (HTMLDocument)popBrowser1.Document;
             // WebRequest request = WebRequest.Create("http://infolapok.hu/like/index.php");
-            //postkuld();
-            if (currentURl != "http://infolapok.hu/like/index.php")
+            if (screen_image==true)
             {
-             
-            } else {
+                int width = 350;
+                int height = 250;
+                var topLeftCorner = popBrowser1.PointToScreen(new System.Windows.Point(0, 0));
+                var topLeftGdiPoint = new System.Drawing.Point((int)topLeftCorner.X, (int)topLeftCorner.Y);
+                var size = new System.Drawing.Size((int)popBrowser1.Width, (int)popBrowser1.Height);
+                var size2 = new System.Drawing.Size(width, height);
+                Bitmap screenShot = new Bitmap(width, height);
+                // Bitmap b = new Bitmap(size.Width, size.Height);
 
-            }
-
-        }
-
-
-        // likerobi ikonra kattintva megnyit egy popupot a posttal------------------------
-        private bool ClickEventHandler(mshtml.IHTMLEventObj e)
-        {
-         
-            System.Drawing.Point point = System.Windows.Forms.Control.MousePosition;
-            var doc = (mshtml.HTMLDocument)web1.Document;
-            IHTMLElement elem =doc.elementFromPoint(point.X,point.Y);
-            // IHTMLElement ch =doc.elementFromPoint(point.X,point.Y);
-            if (elem == null || elem.className == null)
-            {
-            }
-            else
-            { 
-                if (elem.className == "_5pcp _5vsi _52i6 _1tsu _4l4" || elem.className == "_5pcp _5vsi _52i6 _4l4")
+                using (var graphics = Graphics.FromImage(screenShot))
                 {
-                    foreach (IHTMLElement d in elem.all)
-                    {
-                        if (d.className != null)
-                        {
-                            if (d.className.Equals("robi"))
-                            {
-                                // MessageBoxResult messageBoxResult2 = System.Windows.MessageBox.Show(d.getAttribute("hhh"), "Delete Confirmation", System.Windows.MessageBoxButton.YesNo);
-                              //string postid = d.getAttribute("postid");
-                                string postlink =d.getAttribute("postlink");
-                               // string postlink ="httpsgggggggggg";
-                               string kkk = postlink.Replace("https","http");
-                                 //MessageBoxResult messageBoxResult2 = System.Windows.MessageBox.Show(kkk, "Delete Confirmation", System.Windows.MessageBoxButton.YesNo);
-                                // IHTMLElement postdiv = doc.getElementById(postid);
-                                // string divhtml = postdiv.innerHTML;
-                                //string divhtml = "kkkkkkkkkkkkk";
-                                //adatkuld_popup1("adat="+divhtml , "http://kk.infolapok.hu/index.php?kk=");
-                                //adatkuld_popup1("adat=ggggggg","http://"+postlink );
-                               // web1.Navigate(new Uri("http://www.facebook.com/photo.php?fbid=10153440546882521&set=a.10153440546602521.1073741856.826292520&type=1"), null, null, null);
-                              Popup1.IsOpen = true;popBrowser1.Navigate(new Uri(kkk), null, null, null);
-                                popBrowser1.LoadCompleted += poup_LoadCompleted;
-                                return false;
-                            }
-                        }
-                    }
+                    graphics.CopyFromScreen(topLeftGdiPoint, new System.Drawing.Point(),
+                         size, CopyPixelOperation.SourceCopy);
                 }
+
+                screenShot.Save(@"D:\Temp\sc11555.png");
+                screen_image = false;
             }
-        
-            return true;     
+            if (div_text == true)
+            {
+              
+          //IHTMLElement tartalom = pop_document.getElementById("globalContainer");
+                string feed_div_string = feed_div.innerHTML;
+             //   tartalom.innerHTML = feed_div_string;
+              //  string tartalom_text = tartalom.innerHTML;
+
+                pop_document.body.innerHTML =feed_div_string;
+               IHTMLDocument3 documentAsIHtmlDocument3 = (mshtml.IHTMLDocument3) popBrowser1.Document;
+              string content = documentAsIHtmlDocument3.documentElement.innerHTML;
+
+                screen_image = true;div_text = false;
+                popBrowser1.NavigateToString(content);
+                /*
+                
+                
+                
+                var htmlToImageConv = new NReco.ImageGenerator.HtmlToImageConverter();
+                byte[] jpegBytes = htmlToImageConv.GenerateImage(tartalom_text,"Jpeg");
+
+                MemoryStream ms = new MemoryStream(jpegBytes);
+                System.Drawing.Image hhh = System.Drawing.Image.FromStream(ms);
+                hhh.Save(@"D:\Temp\hhh.jpg");*/
+
+            }
+
         }
-// popup bezárás----------------------------------------------
+
+
+        // popup bezárás----------------------------------------------
         public void butnExitPopup_Click(object sender, RoutedEventArgs e)
         {
             Popup1.IsOpen = false;
         }
-//string adatküldés post--------------------------------------------------
-        public void screen_popup1(string postadat, string cim)
+
+
+  
+
+
+bool iEvent_onclick(IHTMLEventObj pEvtObj)
         {
-           // Popup1.IsOpen = true;
-            ASCIIEncoding Encode = new ASCIIEncoding();
-            byte[] post = Encode.GetBytes(postadat);
-            string PostHeaders = "Content-Type: application/x-www-form-urlencoded";
-            popBrowser1.Navigate(cim, null, post, PostHeaders);
-           // HTMLDocument document = (HTMLDocument)popBrowser1.Document;
-    
-            }
+           IHTMLElement gg = pEvtObj.srcElement;
+            feed_id = gg.getAttribute("feedid");
+           string feed_link= gg.getAttribute("feedlink");
+          
+            IHTMLDocument2 doc = (IHTMLDocument2)web1.Document;
+            mshtml.IHTMLElementCollection feed_div = document.getElementById(feed_id).all;
 
 
- //byte adatküldés public void adatkuld_popup1(string postadat,string cim)
-        public void adatkuld_popup1(byte[] postadat,string cim)
-        {
-            Popup1.IsOpen = true;
-            // Convert the string into a byte array
-            //ASCIIEncoding Encode = new ASCIIEncoding();
-           // 
-           // byte[] post = Encode.GetBytes(postadat);
-         
-            // The same Header that its sent when you submit a form.
-            string PostHeaders = "Content-Type: application/x-www-form-urlencoded";
-
-            popBrowser1.Navigate(cim, null, postadat, PostHeaders);
-        }
-
-    
-// likerobi képet tesz a postba------------------------------------------------------
-        public void divtext(object sender, RoutedEventArgs e)
-        {
-            string Postlink = "";
-            string Postid = "";
-
-            HTMLDocument document = (HTMLDocument)web1.Document;
-            foreach (IHTMLElement div in document.getElementsByTagName("div"))
+            foreach (mshtml.IHTMLElement elem1 in feed_div)
             {
-                //if (div.className == "_5pcp _5vsi _52i6 _1tsu _4l4" || div.className == "_5pcp _5vsi _52i6 _4l4"  )
-              // if (div.className == "userContentWrapper _5pcr")
-                 if (div.className == "_5jmm _5pat _3lb4" || div.className == "_5jmm _5pat _3lb4 _x72 _50nb")
+                if (cimsor_class.Contains(elem1.className))
                 {
-                    Postid= div.getAttribute("ID");
-                    IHTMLElementCollection elem = div.all;
-                    foreach (IHTMLElement fff in elem)
-                    {
-                        if (fff.className == "_5pcq")
-                        {
-                            Postlink = fff.getAttribute("href");
-                        }
+                    cimadatok = elem1.innerHTML;
 
-                        if (fff.className == "_5pcp _5vsi _52i6 _1tsu _4l4" || fff.className == "_5pcp _5vsi _52i6 _4l4")
-                        {
-
-                            //fff.innerHTML = "<div class=\"robi\" onclick=\"kattint('" + lll + "');\">like Robi<div>";
-                            //fff.innerHTML = "<div class=\"robi\" hhh=\"" + lll + "\" >like Robi</div>";
-                            fff.innerHTML = "<img src=\"http://kk.infolapok.hu/2.png\" class=\"robi\" Postlink=\"" + Postlink + "\" Postid=\"" + Postid + "\" />";
-                       /*     IHTMLElement sourceDiv =document.createElement("div");
-                            sourceDiv.className = "robi";
-                            sourceDiv.innerHTML = "LikeRobi";*/
-                            //fff.innerHTML.add;
-                        }
-
-
-                        //MessageBoxResult messageBoxResult3 = System.Windows.MessageBox.Show("Are youbbbbb sure?", "Delete Confirmation", System.Windows.MessageBoxButton.YesNo);
-                        //  if (messageBoxResult3 == MessageBoxResult.Yes) ;
-                        // div.innerHTML = "something" + div.innerHTML;
-                    }
+                }
+                else if (szoveg_class.Contains(elem1.className))
+                {
+                    szoveg = elem1.innerHTML;
+                }
+                else if (user_ikon_class.Contains(elem1.className))
+                {
+                 user_ikon_sourci = elem1.getAttribute("src");
+                }
+                else if (feed_image_class.Contains(elem1.className))
+                {
+                feed_image_sourci = elem1.getAttribute("src");
+                }
+                else if (feed_image_szoveg_class.Contains(elem1.className))
+                {
+                   feed_image_szoveg = elem1.innerHTML;
                 }
             }
+              int i = 1;
+            IHTMLControlRange imgRange = (IHTMLControlRange)((HTMLBody)document.body).createControlRange();
+            foreach ( mshtml.IHTMLImgElement img in doc.images)
+             {   string sourci = img.src;
+            //
+                if (sourci == user_ikon_sourci || sourci == feed_image_sourci)
+                { System.Windows.MessageBoxResult messageBoxResult2 = System.Windows.MessageBox.Show("Kép mentése elkészult");
+               
+                    imgRange.add((IHTMLControlElement)img);
 
+                    imgRange.execCommand("Copy", false, null);
+
+                    if (System.Windows.Forms.Clipboard.ContainsImage())
+                    {
+                        System.Drawing.Image image_clipboard = System.Windows.Forms.Clipboard.GetImage();
+                        image_clipboard.Save(@"d:\Temp\hh" + i+".jpg", ImageFormat.Jpeg);
+
+
+         
+                    }
+                    i++;
+                }
+                // image2.save("c:\\a.bmp", imageformat.bmp);
+
+
+
+                /*
+                         using (Bitmap bmp = (Bitmap)System.Windows.Clipboard.GetDataObject().GetData(System.Windows.DataFormats.Bitmap))
+                         {
+                            bmp.Save(@"d:\Temp\" + img.nameProp);
+                           //  bmp.Save(@"D:\Temp\gggg.png");
+                          }
+
+                /*
+                WebRequest req = WebRequest.Create(sour);
+                WebResponse response = req.GetResponse();
+                Stream stream = response.GetResponseStream();
+
+                System.Drawing.Image img = System.Drawing.Image.FromStream(stream);
+                stream.Close();*/
+
+                //img.Save(@"D:\Temp\gggg.png");
+
+                //System.Windows.MessageBoxResult messageBoxResult2 = System.Windows.MessageBox.Show(sour + "hjjh");
+                  
+
+                 }
+
+                // Bitmap screenShot = new Bitmap(500, 400);
+                // Bitmap b = new Bitmap(size.Width, size.Height);
+               // String str = ??????? // I want to assign c:/my/test.html to this string
+                   
+          
+
+               // screenShot.Save(@"D:\Temp\sc11555.png");
+
+
+        
+
+
+            //if (htmlDoc != null) htmlDoc.parentWindow.scrollBy(265, 20);
+
+            //
+
+            /*
+            int width = 350;
+            int height = 250;
+              var topLeftCorner = popBrowser1.PointToScreen(new System.Windows.Point(0, 0));
+           // var topLeftGdiPoint = new System.Drawing.Point(top, left);
+            var topLeftGdiPoint = new System.Drawing.Point((int)topLeftCorner.X,(int)topLeftCorner.Y);
+            var size = new System.Drawing.Size(500,400);
+            var size2 = new System.Drawing.Size(width, height);
+            Bitmap screenShot = new Bitmap(width, height);
+            // Bitmap b = new Bitmap(size.Width, size.Height);
+
+            using (var graphics = Graphics.FromImage(screenShot))
+            {
+                graphics.CopyFromScreen(topLeftGdiPoint, new System.Drawing.Point(),
+                     size2, CopyPixelOperation.SourceCopy);
+            }
+         
+            screenShot.Save(@"D:\Temp\dgsdfsdf.png");*/
+
+            /*           
+                       string strHTML = File.ReadAllText(feed_view_html); 
+                       Popup1.IsOpen = true;
+                       popBrowser1.NavigateToString(strHTML);
+                       while (tovabb==true) {
+                         System.Threading.Thread.Sleep(1000);
+                           i++; if (i == 5) { tovabb = true; }
+           /*/
+            div_text = true;
+                    // Popup1.IsOpen = true;
+                    // popBrowser1.Navigate(feed_link);
+
+            return true;
         }
+
+        // likerobi képet tesz a postba------------------------------------------------------
+        public void divtext(object sender, RoutedEventArgs e)
+        {
+            string feedlink = "nincs";
+           
+                foreach (HTMLDivElement div in document.getElementsByTagName("div"))
+            {
+                //if (div.id == feed_div_id_19.Substring(0, 18))
+                if (feed_div_class.Contains(div.className))
+                {
+
+                    string feed_div_id = div.getAttribute("ID");
+                    foreach (IHTMLElement link1 in div.getElementsByTagName("a"))
+                    {
+                        if (link1.className == "_5pcq")
+                        {
+                            feedlink = link1.getAttribute("href");
+                        }
+                    }
+
+                    foreach (HTMLDivElement fff in div.getElementsByTagName("div"))
+                    {
+                        
+
+                            if (cel_div_class.Contains(fff.className))
+                            {
+                                string likediv = "<div class=\"robi\" feedid=\""+feed_div_id+ "\" feedlink=\"" +feedlink+ "\" style=\" margin:5px;padding:5px;color:red;background-color:blue;\" >like</div>";
+                                fff.innerHTML = likediv;
+                                HTMLElementEvents2_Event iEvent;
+                                iEvent = (HTMLElementEvents2_Event )fff;
+                                iEvent.onclick += new HTMLElementEvents2_onclickEventHandler(iEvent_onclick);
+                              // LR Lrobi  = new LR(document );
+                            } // Lrobi.aktival();
+                        }
+                    }
+
+                }
+            }
+        }
+
+
+
     }
-       
-   
 
 
 
-}
