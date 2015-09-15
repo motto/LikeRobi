@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Net; //webclient
+using System.IO; //memory stream
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using mshtml;
-using System.Drawing;
-using System.Runtime.InteropServices;
+using mshtml;   //ihtmlelement stb
+using System.Drawing; //image készítés mentés
+using System.Drawing.Imaging; //imageformat
+using System.Runtime.InteropServices; // comimporthoz kell [ComImport, InterfaceType((short)1), Guid("3050F669-98B5-11CF-BB82-00AA00BDCE0B")]
 namespace LikeRobi
 {
     class Conf
@@ -26,6 +29,29 @@ namespace LikeRobi
 
 
     }
+    /*
+    public class Example
+    {
+        public static void Main()
+        {
+            string uriString = "http://www.java2s.com";
+            WebClient myWebClient = new WebClient();
+            string postData = "data";
+            myWebClient.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
+            Console.WriteLine(myWebClient.Headers.ToString());
+
+            byte[] byteArray = Encoding.ASCII.GetBytes(postData);
+            byte[] responseArray = myWebClient.UploadData(new Uri(uriString), "POST", byteArray);
+
+            Encoding.ASCII.GetString(responseArray);
+
+
+        }
+    }
+
+*/
+
+
     public class Htmlseged
     {
         static public IHTMLDocument2 doc;
@@ -62,7 +88,14 @@ namespace LikeRobi
 
         //---------------------------------------
 
-
+        public Byte[] BitmapToArray(Bitmap bitmap)
+        {
+            using (MemoryStream stream = new MemoryStream())
+            {
+                bitmap.Save(stream, ImageFormat.Bmp);
+                return stream.ToArray();
+            }
+        }
 
 
 
@@ -115,38 +148,36 @@ namespace LikeRobi
             IHTMLControlRange imgRange = (IHTMLControlRange)((HTMLBody)document.body).createControlRange();
             foreach (mshtml.IHTMLImgElement img in doc.images)
             {
-
-
-        string sourci = img.src;
+             string sourci = img.src;
                 //
                 if (sourci == user_ikon_sourci || sourci == feed_image_sourci)
                 {
 
                     Bitmap ujkep = GetImage(img);
                     ujkep.Save(@"d:\Temp\hh" + i + ".jpg");
-                    /*
-                 
+                    byte[] bite = BitmapToArray(ujkep);
+                    string base64String = Convert.ToBase64String(bite);
 
-                    System.Windows.Forms.Clipboard.Clear();
-                System.Windows.MessageBoxResult messageBoxResult2 = System.Windows.MessageBox.Show("vágólap törlése törlése");
 
-                  
-                    imgRange.add((IHTMLControlElement)img);
-                    imgRange.execCommand("Copy", false, null);
-                System.Windows.MessageBoxResult messageBoxResult3 = System.Windows.MessageBox.Show("Kép mentése elkészult");
+                    string URI = "http://like.infolapok.hu";
+               
+                    string myParameters = "param1=value1&param2=value2&param3="+base64String;
 
-                    if (System.Windows.Forms.Clipboard.ContainsImage())
+                    using (WebClient wc = new WebClient())
                     {
-                        System.Drawing.Image image_clipboard = System.Windows.Forms.Clipboard.GetImage();
-                        image_clipboard.Save(@"d:\Temp\hh" + i + ".jpg", System.Drawing.Imaging.ImageFormat.Jpeg);
+                        wc.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
+                        string HtmlResult = wc.UploadString(URI, myParameters);
+                        Console.WriteLine(" a válasz: {0}",HtmlResult);
+                    }
 
-                      //  img.nameProp;
+                   // string ff= Encoding.ASCII.GetString(responseArray);
+               
 
-                    }*/
                     i++;
                 }
-            }
 
+            }
+   
             bool kk = true;
             return kk;
         }
@@ -196,8 +227,30 @@ namespace LikeRobi
     }
 
     /*
-  //  button click----------------------------------------
-     var element = doc.getElementById("button id"); //Id of the input element
+     
+                 
+
+                    System.Windows.Forms.Clipboard.Clear();
+                System.Windows.MessageBoxResult messageBoxResult2 = System.Windows.MessageBox.Show("vágólap törlése törlése");
+
+                  
+                    imgRange.add((IHTMLControlElement)img);
+                    imgRange.execCommand("Copy", false, null);
+                System.Windows.MessageBoxResult messageBoxResult3 = System.Windows.MessageBox.Show("Kép mentése elkészult");
+
+                    if (System.Windows.Forms.Clipboard.ContainsImage())
+                    {
+                        System.Drawing.Image image_clipboard = System.Windows.Forms.Clipboard.GetImage();
+                        image_clipboard.Save(@"d:\Temp\hh" + i + ".jpg", System.Drawing.Imaging.ImageFormat.Jpeg);
+
+                      //  img.nameProp;
+
+                    }
+
+
+
+    //  button click----------------------------------------
+    var element = doc.getElementById("button id"); //Id of the input element
             if (element != null)
             { 
                 element.click();
